@@ -1,0 +1,100 @@
+name: Discord GitHub Feed
+
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, closed, ready_for_review]
+  issues:
+    types: [opened, reopened, closed]
+  issue_comment:
+    types: [created]
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send event to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL || vars.DISCORD_WEBHOOK_URL }}
+          PAYLOAD: ${{ toJson(github.event) }}
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REPOSITORY: ${{ github.repository }}
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          import urllib.request
+
+          webhook = os.environ.get("WEBHOOK", "").strip()
+          if not webhook:
+              print("DISCORD_WEBHOOK_URL is not configured; skipping notification.")
+              raise SystemExit(0)
+
+          event_name = os.environ["EVENT"]
+          action = os.environ.get("ACTION", "")
+          repo = os.environ["REPOSITORY"]
+          repo_url = os.environ["REPOSITORY_URL"]
+          actor = os.environ["ACTOR"]
+          event = json.loads(os.environ.get("PAYLOAD") or "{}")
+
+          color = 0xE34B27
+          title = f"[{repo}] {event_name}"
+          url = repo_url
+          description = ""
+
+          if event_name == "push":
+              commit = event.get("head_commit") or {}
+              title = f"[{repo}] Push to {os.environ.get('REF_NAME', '')}"
+              url = event.get("compare") or repo_url
+              description = f"**{actor}** pushed `{commit.get('id', '')[:7]}`\n\n{commit.get('message', '')}"
+          elif event_name == "issues":
+              issue = event.get("issue") or {}
+              title = f"[{repo}] Issue #{issue.get('number')}: {issue.get('title', '')}"
+              url = issue.get("html_url") or repo_url
+              description = f"**{action}** by **{actor}**\n\n{issue.get('body') or ''}"
+              color = 0xE74C3C if action == "opened" else 0x2ECC71
+          elif event_name == "issue_comment":
+              issue = event.get("issue") or {}
+              comment = event.get("comment") or {}
+              title = f"[{repo}] Comment on issue #{issue.get('number')}"
+              url = comment.get("html_url") or issue.get("html_url") or repo_url
+              description = f"**{actor}** commented:\n\n{comment.get('body') or ''}"
+              color = 0x3498DB
+          elif event_name == "pull_request":
+              pull = event.get("pull_request") or {}
+              title = f"[{repo}] PR #{pull.get('number')}: {pull.get('title', '')}"
+              url = pull.get("html_url") or repo_url
+              description = f"**{action}** by **{actor}**\n\n{pull.get('body') or ''}"
+              color = 0x9B59B6
+          elif event_name == "release":
+              release = event.get("release") or {}
+              title = f"[{repo}] Release {release.get('tag_name', '')}"
+              url = release.get("html_url") or repo_url
+              description = release.get("body") or release.get("name") or "Release published"
+              color = 0xF1C40F
+
+          embed = {
+              "title": title[:256],
+              "url": url,
+              "description": description.strip()[:4000] or f"Event: {event_name} {action}".strip(),
+              "color": color,
+              "author": {"name": actor},
+              "footer": {"text": "Cinderscapes: Forged Dawn • GitHub"},
+              "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          }
+          request = urllib.request.Request(
+              webhook,
+              data=json.dumps({"allowed_mentions": {"parse": []}, "embeds": [embed]}).encode(),
+              headers={"Content-Type": "application/json", "User-Agent": f"{repo}/discord-feed"},
+              method="POST",
+          )
+          with urllib.request.urlopen(request) as response:
+              response.read()
+          PY

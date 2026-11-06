@@ -1,0 +1,35 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="LGPL-3.0-only"
+issueTrackerURL="https://github.com/Reijin2312/Cinderscapes_Forged_Dawn/issues"
+
+[[mods]]
+modId="cinderscapes"
+version="${version}"
+displayName="Cinderscapes Forge"
+displayURL="https://github.com/Reijin2312/Cinderscapes_Forged_Dawn"
+logoFile="assets/cinderscapes/icon.png"
+credits="TerraformersMC for the original Fabric mod; Forge port based on the Reforged toolchain"
+authors="TerraformersMC, Raijin2312"
+description='''A biome mod expanding the life of The Nether.'''
+
+[[dependencies.cinderscapes]]
+modId="forge"
+mandatory=true
+versionRange="[47.1.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.cinderscapes]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.cinderscapes]]
+modId="cloth_config"
+mandatory=true
+versionRange="[11.1.136,)"
+ordering="NONE"
+side="BOTH"

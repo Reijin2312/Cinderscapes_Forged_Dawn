@@ -1,0 +1,74 @@
+package com.terraformersmc.cinderscapes.init;
+
+import com.terraformersmc.cinderscapes.Cinderscapes;
+import com.terraformersmc.cinderscapes.biome.AshyShoalsBiome;
+import com.terraformersmc.cinderscapes.biome.BlackstoneShalesBiome;
+import com.terraformersmc.cinderscapes.biome.LuminousGroveBiome;
+import com.terraformersmc.cinderscapes.biome.QuartzCavernBiome;
+import com.terraformersmc.cinderscapes.data.RegistryEntries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.Biome;
+
+import java.util.List;
+
+@SuppressWarnings("UnstableApiUsage")
+public class CinderscapesBiomes {
+    public static final RegistryKey<Biome> ASHY_SHOALS = RegistryKey.of(RegistryKeys.BIOME, Identifier.of(Cinderscapes.NAMESPACE, "ashy_shoals"));
+    public static final RegistryKey<Biome> BLACKSTONE_SHALES = RegistryKey.of(RegistryKeys.BIOME, Identifier.of(Cinderscapes.NAMESPACE, "blackstone_shales"));
+    public static final RegistryKey<Biome> LUMINOUS_GROVE = RegistryKey.of(RegistryKeys.BIOME, Identifier.of(Cinderscapes.NAMESPACE, "luminous_grove"));
+    public static final RegistryKey<Biome> QUARTZ_CAVERN = RegistryKey.of(RegistryKeys.BIOME, Identifier.of(Cinderscapes.NAMESPACE, "quartz_cavern"));
+
+    public static final List<RegistryKey<Biome>> BIOMES = List.of(
+            ASHY_SHOALS,
+            BLACKSTONE_SHALES,
+            LUMINOUS_GROVE,
+            QUARTZ_CAVERN
+    );
+
+    public static void populate(RegistryEntries entries) {
+        entries.add(ASHY_SHOALS, AshyShoalsBiome.create(entries));
+        entries.add(BLACKSTONE_SHALES, BlackstoneShalesBiome.create(entries));
+        entries.add(LUMINOUS_GROVE, LuminousGroveBiome.create(entries));
+        entries.add(QUARTZ_CAVERN, QuartzCavernBiome.create(entries));
+    }
+
+    // Required because something referencing this class has to be called in order to force the
+    // static initializer to run (Minecraft's Bootstrap class does similar things)
+    public static void init() {
+        // This just creates the registry keys.  Biome objects are requested and consumed by datagen now.
+    }
+}
+
+/*
+ * Nether biome noise points for future reference:
+ *
+ * |--  -2/+2  ---------------------| |--  =0=  -------------------------------------------------------|  |--  0/+1  --|
+ * float temperature, float humidity, float continentalness, float erosion, float depth, float weirdness, float offset
+ *
+ *  == VANILLA ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ *  0.0f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    NETHER_WASTES
+ *  0.0f,  -0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    SOUL_SAND_VALLEY
+ *  0.4f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    CRIMSON_FOREST
+ *  0.0f,   0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  0.375f  WARPED_FOREST
+ * -0.5f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.175f  BASALT_DELTAS
+ *
+ *  == 1.18 ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ * -0.35F,  0.0F,  0.2F,  0.0F,  0.35F, 0.0F,  0.0F    ASHY_SHOALS
+ *  0.15F,  0.05F, 0.2F,  0.0F,  0.25F, 0.05F, 0.0F    BLACKSTONE_SHALES
+ *  0.35F,  0.35F, 0.0F,  0.0F,  0.0F,  0.0F,  0.2F    LUMINOUS_GROVE
+ *  0.0F,   0.0F,  0.0F,  0.0F,  0.35F, 0.35F, 0.2F    QUARTZ_CAVERN
+ *
+ *  == 1.19 ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ * -0.35F, -0.3F,  0.0F,  0.0F,  0.0F,  0.0F,  0.2F    ASHY_SHOALS
+ *  0.1F,  -0.05F, 0.0F,  0.0F,  0.0F,  0.0F,  0.0F    BLACKSTONE_SHALES
+ *  0.35F,  0.3F,  0.0F,  0.0F,  0.0F,  0.0F,  0.225F  LUMINOUS_GROVE
+ * -0.225F, 0.0F,  0.0F,  0.0F,  0.0F,  0.0F,  0.1F    QUARTZ_CAVERN
+ */

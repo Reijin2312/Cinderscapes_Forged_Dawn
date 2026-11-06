@@ -1,0 +1,7 @@
+accessWidener v1 named
+
+accessible  method  net/minecraft/util/math/Vec3i setX (I)Lnet/minecraft/util/math/Vec3i;
+accessible  method  net/minecraft/util/math/Vec3i setY (I)Lnet/minecraft/util/math/Vec3i;
+accessible  method  net/minecraft/util/math/Vec3i setZ (I)Lnet/minecraft/util/math/Vec3i;
+accessible  method  net/minecraft/entity/SpawnRestriction register (Lnet/minecraft/entity/EntityType;Lnet/minecraft/entity/SpawnRestriction$Location;Lnet/minecraft/world/Heightmap$Type;Lnet/minecraft/entity/SpawnRestriction$SpawnPredicate;)V
+accessible  field   net/minecraft/block/ComposterBlock ITEM_TO_LEVEL_INCREASE_CHANCE Lit/unimi/dsi/fastutil/objects/Object2FloatMap;

@@ -1,0 +1,13 @@
+archivesBaseName = "cinderscapes-worldgen"
+
+loom {
+    accessWidenerPath = file("src/main/resources/cinderscapes-worldgen.accesswidener")
+}
+
+dependencies {
+    implementation project(path: ':cinderscapes-common')
+
+    // Biolith and TerraBlender for the worldgen API modules
+    modImplementation "com.terraformersmc:biolith:${biolith_version}"
+    modCompileOnlyApi "com.github.glitchfiend:TerraBlender-fabric:${terrablender_version}"
+}

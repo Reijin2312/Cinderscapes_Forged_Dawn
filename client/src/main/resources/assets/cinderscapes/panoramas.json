@@ -1,0 +1,15 @@
+{
+	"fortress": {
+		"musicSound": {
+			"sound": "cinderscapes:music.menu"
+		},
+		"cubemaps": [
+			{
+				"cubemapId": "cinderscapes:textures/gui/panorama/fortress",
+				"visualControl": {
+					"addedY": 0.15
+				}
+			}
+		]
+	}
+}

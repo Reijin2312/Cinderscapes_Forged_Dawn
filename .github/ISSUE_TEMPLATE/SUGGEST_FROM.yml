@@ -1,0 +1,13 @@
+name: Suggest a Feature or Change
+description: Suggest an improvement to the Forge port
+title: "[Suggestion] "
+labels: ["suggestion"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain the proposed feature or change and why it belongs in Cinderscapes.
+    validations:
+      required: true
+

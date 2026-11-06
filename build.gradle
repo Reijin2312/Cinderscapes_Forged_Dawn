@@ -1,0 +1,104 @@
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'idea'
+    id 'eclipse'
+    id 'dev.architectury.loom' version '1.9-SNAPSHOT'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+group = project.maven_group
+version = project.mod_version
+base.archivesName = project.archive_name
+
+sourceSets {
+    gametest {
+        java.srcDir 'src/gametest/java'
+        compileClasspath += main.output + main.compileClasspath
+        runtimeClasspath += output + compileClasspath + main.runtimeClasspath
+    }
+}
+
+loom {
+    mods {
+        cinderscapes {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+    runs {
+        data { data() }
+        gameTestServer {
+            environment 'gametestserver'
+            forgeTemplate 'gameTestServer'
+            runDir 'build/gametest'
+            property 'forge.enabledGameTestNamespaces', 'cinderscapes'
+        }
+    }
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add('cinderscapes-common.accesswidener')
+        extraAccessWideners.add('cinderscapes-worldgen.accesswidener')
+        mixinConfigs = ['mixins.cinderscapes-common.json', 'mixins.cinderscapes-worldgen.json']
+        dataGen { mod 'cinderscapes' }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['common/src/main/java', 'client/src/main/java', 'worldgen/src/main/java']
+            exclude '**/data/Cinderscapes*.java'
+            exclude '**/integration/CinderscapesModMenu.java'
+            exclude '**/biome/CinderscapesBiomeRemappings.java'
+            exclude '**/biomegen/CinderscapesBiomeAPIGeneration.java'
+        }
+        resources {
+            srcDirs = ['common/src/main/resources', 'common/src/main/generated', 'client/src/main/resources', 'worldgen/src/main/resources', 'src/forge/resources']
+            exclude 'fabric.mod.json'
+        }
+    }
+}
+
+repositories {
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/' }
+    maven { name = 'Shedaniel'; url = 'https://maven.shedaniel.me/' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = 'https://maven.blamejared.com/' }
+    mavenLocal()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation(annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.2'))
+    implementation 'io.github.llamalad7:mixinextras-forge:0.3.2'
+    modImplementation include("dev.trinsdar:terraform-shapes-api-v1:${terraform_version}")
+    modImplementation include("dev.trinsdar:terraform-surfaces-api-v1:${terraform_version}")
+    modImplementation include("dev.trinsdar:terraform-wood-api-v1:${terraform_version}")
+    modImplementation include("dev.trinsdar:terraform-utils-v1:${terraform_version}")
+    modImplementation include("com.terraformersmc:biolith-forge:${biolith_version}")
+    modCompileOnlyApi "com.github.glitchfiend:TerraBlender-forge:${terrablender_version}"
+    modImplementation "me.shedaniel.cloth:cloth-config-forge:${clothconfig_version}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property 'version', project.version
+    filesMatching('META-INF/mods.toml') { expand version: project.version }
+}
+
+jar { archiveClassifier = 'dev' }
+
+tasks.named('runGameTestServer') {
+    dependsOn tasks.named('gametestClasses')
+}
