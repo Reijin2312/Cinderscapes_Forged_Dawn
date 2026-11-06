@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="LGPL-3.0-only"
+
+[[mods]]
+modId="cinderscapes"
+version="${version}"
+displayName="Cinderscapes NeoForge"
+displayURL="https://github.com/Reijin2312/Cinderscapes_Forged_Dawn"
+logoFile="assets/cinderscapes/icon.png"
+authors="TerraformersMC, Raijin2312"
+description='''A biome mod expanding the life of The Nether.'''
+
+[[dependencies.cinderscapes]]
+modId="neoforge"
+mandatory=true
+versionRange="[21.1,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.cinderscapes]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.cinderscapes]]
+modId="cloth_config"
+mandatory=true
+versionRange="[15.0.140,)"
+ordering="NONE"
+side="BOTH"
+
+[[mixins]]
+config="mixins.cinderscapes-common.json"
+
+[[mixins]]
+config="mixins.cinderscapes-worldgen.json"

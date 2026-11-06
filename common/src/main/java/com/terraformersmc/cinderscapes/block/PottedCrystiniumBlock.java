@@ -1,0 +1,27 @@
+package com.terraformersmc.cinderscapes.block;
+
+import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class PottedCrystiniumBlock extends FlowerPotBlock {
+    public PottedCrystiniumBlock() {
+        super(CinderscapesBlocks.CRYSTINIUM, BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM));
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+        double x = pos.getX() + 0.5;
+        double z = pos.getZ() + 0.5;
+
+        if (random.nextFloat() > 0.8) {
+            world.addParticle(ParticleTypes.FIREWORK, x + random.nextFloat() - 0.5f, pos.getY() + random.nextFloat(), z + random.nextFloat() - 0.5f, random.nextFloat() * 0.1 - 0.05, random.nextFloat() * 0.1 - 0.05, random.nextFloat() * 0.1 - 0.05);
+        }
+    }
+}

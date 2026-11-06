@@ -1,0 +1,67 @@
+package com.terraformersmc.cinderscapes.init;
+
+import com.terraformersmc.cinderscapes.Cinderscapes;
+import com.terraformersmc.cinderscapes.biome.AshyShoalsBiome;
+import com.terraformersmc.cinderscapes.biome.BlackstoneShalesBiome;
+import com.terraformersmc.cinderscapes.biome.LuminousGroveBiome;
+import com.terraformersmc.cinderscapes.biome.QuartzCavernBiome;
+import java.util.List;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
+
+public class CinderscapesBiomes {
+    public static final ResourceKey<Biome> ASHY_SHOALS = ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Cinderscapes.MOD_ID, "ashy_shoals"));
+    public static final ResourceKey<Biome> BLACKSTONE_SHALES = ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Cinderscapes.MOD_ID, "blackstone_shales"));
+    public static final ResourceKey<Biome> LUMINOUS_GROVE = ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Cinderscapes.MOD_ID, "luminous_grove"));
+    public static final ResourceKey<Biome> QUARTZ_CAVERN = ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Cinderscapes.MOD_ID, "quartz_cavern"));
+
+    @SuppressWarnings("unused")
+    public static final List<ResourceKey<Biome>> BIOMES = List.of(
+            ASHY_SHOALS,
+            BLACKSTONE_SHALES,
+            LUMINOUS_GROVE,
+            QUARTZ_CAVERN
+    );
+
+    public static void bootstrap(BootstrapContext<Biome> registerable) {
+        registerable.register(ASHY_SHOALS, AshyShoalsBiome.create(registerable));
+        registerable.register(BLACKSTONE_SHALES, BlackstoneShalesBiome.create(registerable));
+        registerable.register(LUMINOUS_GROVE, LuminousGroveBiome.create(registerable));
+        registerable.register(QUARTZ_CAVERN, QuartzCavernBiome.create(registerable));
+    }
+}
+
+/*
+ * Nether biome noise points for future reference:
+ *
+ * |--  -2/+2  ---------------------| |--  =0=  -------------------------------------------------------|  |--  0/+1  --|
+ * float temperature, float humidity, float continentalness, float erosion, float depth, float weirdness, float offset
+ *
+ *  == VANILLA ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ *  0.0f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    NETHER_WASTES
+ *  0.0f,  -0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    SOUL_SAND_VALLEY
+ *  0.4f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f    CRIMSON_FOREST
+ *  0.0f,   0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  0.375f  WARPED_FOREST
+ * -0.5f,   0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.175f  BASALT_DELTAS
+ *
+ *  == 1.18 ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ * -0.35F,  0.0F,  0.2F,  0.0F,  0.35F, 0.0F,  0.0F    ASHY_SHOALS
+ *  0.15F,  0.05F, 0.2F,  0.0F,  0.25F, 0.05F, 0.0F    BLACKSTONE_SHALES
+ *  0.35F,  0.35F, 0.0F,  0.0F,  0.0F,  0.0F,  0.2F    LUMINOUS_GROVE
+ *  0.0F,   0.0F,  0.0F,  0.0F,  0.35F, 0.35F, 0.2F    QUARTZ_CAVERN
+ *
+ *  == 1.19 ==
+ *
+ *  TEMP  HUMIDI  CONTIN  EROSI  DEPTH  WEIRD  OFFSET  BIOME
+ * -0.35F, -0.3F,  0.0F,  0.0F,  0.0F,  0.0F,  0.2F    ASHY_SHOALS
+ *  0.1F,  -0.05F, 0.0F,  0.0F,  0.0F,  0.0F,  0.0F    BLACKSTONE_SHALES
+ *  0.35F,  0.3F,  0.0F,  0.0F,  0.0F,  0.0F,  0.225F  LUMINOUS_GROVE
+ * -0.225F, 0.0F,  0.0F,  0.0F,  0.0F,  0.0F,  0.1F    QUARTZ_CAVERN
+ */

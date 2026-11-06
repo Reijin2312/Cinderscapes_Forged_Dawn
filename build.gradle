@@ -1,0 +1,90 @@
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'idea'
+    id 'eclipse'
+    id 'dev.architectury.loom' version '1.11.458'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+group = project.maven_group
+version = project.mod_version
+base.archivesName = project.archive_name
+
+sourceSets {
+    gametest {
+        java.srcDir 'src/gametest/java'
+        compileClasspath += main.output + main.compileClasspath
+        runtimeClasspath += output + compileClasspath + main.runtimeClasspath
+    }
+}
+
+loom {
+    mods {
+        cinderscapes {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+    neoForge { }
+    runs {
+        data { data() }
+        gameTestServer {
+            environment 'gametestserver'
+            forgeTemplate 'gameTestServer'
+            runDir 'build/gametest'
+            property 'neoforge.enabledGameTestNamespaces', 'cinderscapes'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['common/src/main/java', 'client/src/main/java', 'worldgen/src/main/java']
+            exclude '**/data/Cinderscapes*.java'
+            exclude '**/init/CinderscapesArmorTrimMaterials.java'
+            exclude '**/integration/CinderscapesModMenu.java'
+            exclude '**/biome/CinderscapesBiomeRemappings.java'
+            exclude '**/biomegen/CinderscapesBiomeAPIGeneration.java'
+            exclude '**/biomegen/CinderscapesTerraBlenderGeneration.java'
+        }
+        resources {
+            srcDirs = ['common/src/main/resources', 'common/src/main/generated', 'client/src/main/resources', 'worldgen/src/main/resources', 'src/neoforge/resources']
+            exclude 'fabric.mod.json'
+        }
+    }
+}
+
+repositories {
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases/' }
+    maven { name = 'Shedaniel'; url = 'https://maven.shedaniel.me/' }
+    maven { url = 'https://maven.neoforged.net/releases/' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    neoForge "net.neoforged:neoforge:${neoforge_version}"
+    implementation(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
+    implementation 'io.github.llamalad7:mixinextras-neoforge:0.4.1'
+    modImplementation include("com.terraformersmc:biolith-neoforge:${biolith_version}")
+    modImplementation "me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}"
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') { expand version: project.version }
+}
+
+jar { archiveClassifier = 'dev' }
+
+tasks.named('runGameTestServer') {
+    dependsOn tasks.named('gametestClasses')
+}

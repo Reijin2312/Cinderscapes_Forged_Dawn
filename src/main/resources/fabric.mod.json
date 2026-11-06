@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "cinderscapes",
+  "version": "${version}",
+  "name": "Cinderscapes",
+  "description": "An expansion of Minecraft's Nether biomes!",
+  "authors": [
+    "Vaerian",
+    "NeusFear",
+    "LudoCrypt",
+    "TerraformersMC"
+  ],
+  "contributors": [
+    "SuperCoder79",
+    "Prospector",
+    "Etorna_Z",
+    "Arobazzz",
+    "Slice",
+    "Trinsdar",
+    "haykam821",
+    "gniftygnome",
+    "FireNH"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/cinderscapes",
+    "sources": "https://github.com/TerraformersMC/Cinderscapes",
+    "issues": "https://github.com/TerraformersMC/Cinderscapes/issues"
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "assets/cinderscapes/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "modmenu": [
+      "com.terraformersmc.cinderscapes.integration.CinderscapesModMenu"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": ">=0.77.0",
+    "minecraft": ">=1.21 <1.21.2",
+    "cloth-config": "*"
+  }
+}
