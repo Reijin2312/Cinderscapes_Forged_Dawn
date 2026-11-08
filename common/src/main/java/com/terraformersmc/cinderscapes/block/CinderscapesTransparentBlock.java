@@ -1,9 +1,9 @@
 package com.terraformersmc.cinderscapes.block;
 
-import net.minecraft.block.TransparentBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 
 public class CinderscapesTransparentBlock extends TransparentBlock {
-    public CinderscapesTransparentBlock(Settings settings) {
+    public CinderscapesTransparentBlock(Properties settings) {
         super(settings);
     }
 }

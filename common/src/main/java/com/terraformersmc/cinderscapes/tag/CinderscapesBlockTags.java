@@ -1,10 +1,10 @@
 package com.terraformersmc.cinderscapes.tag;
 
 import com.terraformersmc.cinderscapes.Cinderscapes;
-import net.minecraft.block.Block;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public class CinderscapesBlockTags {
     public static final TagKey<Block> ASH_PERMEABLE = CinderscapesBlockTags.of("ash_permeable");
@@ -17,10 +17,10 @@ public class CinderscapesBlockTags {
     }
 
     private static TagKey<Block> of(String path) {
-        return CinderscapesBlockTags.of(Identifier.of(Cinderscapes.MOD_ID, path));
+        return CinderscapesBlockTags.of(Identifier.fromNamespaceAndPath(Cinderscapes.MOD_ID, path));
     }
 
     private static TagKey<Block> of(Identifier id) {
-        return TagKey.of(RegistryKeys.BLOCK, id);
+        return TagKey.create(Registries.BLOCK, id);
     }
 }

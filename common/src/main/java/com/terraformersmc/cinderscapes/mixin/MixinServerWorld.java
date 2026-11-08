@@ -4,25 +4,25 @@ import com.terraformersmc.cinderscapes.config.CinderscapesConfig;
 import com.terraformersmc.cinderscapes.init.CinderscapesBiomes;
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import com.terraformersmc.cinderscapes.tag.CinderscapesBlockTags;
-import net.minecraft.block.BlockState;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.random.RandomSequencesState;
-import net.minecraft.world.MutableWorldProperties;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.dimension.DimensionOptions;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.ServerWorldProperties;
-import net.minecraft.world.level.storage.LevelStorage;
-import net.minecraft.world.spawner.SpecialSpawner;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.RandomSequences;
+import net.minecraft.world.level.CustomSpawner;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.WritableLevelData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,63 +35,63 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
-@Mixin(ServerWorld.class)
-public abstract class MixinServerWorld extends World {
+@Mixin(ServerLevel.class)
+public abstract class MixinServerWorld extends Level {
     @Unique
-    private static Predicate<RegistryEntry<Biome>> ASHY_SHOALS_PREDICATE;
+    private static Predicate<Holder<Biome>> ASHY_SHOALS_PREDICATE;
 
-    protected MixinServerWorld(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
+    protected MixinServerWorld(WritableLevelData properties, ResourceKey<Level> registryRef, RegistryAccess registryManager, Holder<DimensionType> dimensionEntry, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
         super(properties, registryRef, registryManager, dimensionEntry, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void cinderscapes$cacheAshyShoalsEntry(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, boolean debugWorld, long seed, List<SpecialSpawner> spawners, boolean shouldTickTime, @Nullable RandomSequencesState randomSequenceState, CallbackInfo ci) {
-        ASHY_SHOALS_PREDICATE = Predicate.isEqual(getRegistryManager().getOrThrow(RegistryKeys.BIOME).getOptional(CinderscapesBiomes.ASHY_SHOALS).orElseThrow());
+    private void cinderscapes$cacheAshyShoalsEntry(MinecraftServer server, Executor workerExecutor, LevelStorageSource.LevelStorageAccess session, ServerLevelData properties, ResourceKey<Level> worldKey, LevelStem dimensionOptions, boolean debugWorld, long seed, List<CustomSpawner> spawners, boolean shouldTickTime, @Nullable RandomSequences randomSequenceState, CallbackInfo ci) {
+        ASHY_SHOALS_PREDICATE = Predicate.isEqual(registryAccess().lookupOrThrow(Registries.BIOME).get(CinderscapesBiomes.ASHY_SHOALS).orElseThrow());
     }
 
     /*
      * NOTE: Unlike this mixin, vanilla evaluates the tick only at the surface Y level.
      * This means there is no utility for us in reusing vanilla's calculations.
      */
-    @Inject(method = "tickIceAndSnow", at = @At("HEAD"), locals = LocalCapture.NO_CAPTURE)
+    @Inject(method = "tickPrecipitation", at = @At("HEAD"), locals = LocalCapture.NO_CAPTURE)
     private void cinderscapes$tickAsh(BlockPos tickPos, CallbackInfo ci) {
         if (!CinderscapesConfig.INSTANCE.enableAshFall) {
             return;
         }
 
-        BlockPos.Mutable pos = tickPos.mutableCopy();
-        ChunkSection[] sections = getChunk(tickPos).getSectionArray();
+        BlockPos.MutableBlockPos pos = tickPos.mutable();
+        LevelChunkSection[] sections = getChunk(tickPos).getSections();
         int sectionIndex;
 
         for (pos.setY(pos.getY() + 1); pos.getY() < 127; pos.setY(pos.getY() + 1)) {
-            sectionIndex = ChunkSectionPos.getSectionCoord(pos.getY());
+            sectionIndex = SectionPos.blockToSectionCoord(pos.getY());
 
-            if (sections[sectionIndex].isEmpty() || !sections[sectionIndex].getBiomeContainer().hasAny(ASHY_SHOALS_PREDICATE)) {
-                pos.setY(ChunkSectionPos.getBlockCoord(sectionIndex + 1) - 1);
+            if (sections[sectionIndex].hasOnlyAir() || !sections[sectionIndex].getBiomes().maybeHas(ASHY_SHOALS_PREDICATE)) {
+                pos.setY(SectionPos.sectionToBlockCoord(sectionIndex + 1) - 1);
                 continue;
             }
 
-            if (canPlaceAshAt(pos) && getBiome(pos).matchesKey(CinderscapesBiomes.ASHY_SHOALS)) {
-                setBlockState(pos, CinderscapesBlocks.ASH.getDefaultState());
+            if (canPlaceAshAt(pos) && getBiome(pos).is(CinderscapesBiomes.ASHY_SHOALS)) {
+                setBlockAndUpdate(pos, CinderscapesBlocks.ASH.defaultBlockState());
                 break;
             }
         }
     }
 
     @Unique
-    private boolean canPlaceAshAt(BlockPos.Mutable pos) {
+    private boolean canPlaceAshAt(BlockPos.MutableBlockPos pos) {
         return getBlockState(pos).isAir() &&
-                blockAbove(pos).isIn(CinderscapesBlockTags.ASH_PERMEABLE) &&
-                CinderscapesBlocks.ASH.getDefaultState().canPlaceAt(this, pos);
+                blockAbove(pos).is(CinderscapesBlockTags.ASH_PERMEABLE) &&
+                CinderscapesBlocks.ASH.defaultBlockState().canSurvive(this, pos);
     }
 
     @Unique
-    private BlockState blockAbove(BlockPos.Mutable pos) {
+    private BlockState blockAbove(BlockPos.MutableBlockPos pos) {
         int originalY = pos.getY();
         BlockState stateAbove;
 
         //noinspection StatementWithEmptyBody
-        for (; isAir(pos) && pos.getY() < 127; pos.setY(pos.getY() + 1));
+        for (; isEmptyBlock(pos) && pos.getY() < 127; pos.setY(pos.getY() + 1));
 
         stateAbove = getBlockState(pos);
         pos.setY(originalY);

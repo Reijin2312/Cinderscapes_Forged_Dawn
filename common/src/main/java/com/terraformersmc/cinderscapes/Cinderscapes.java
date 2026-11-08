@@ -1,55 +1,79 @@
 package com.terraformersmc.cinderscapes;
 
+import com.terraformersmc.cinderscapes.biomegen.CinderscapesBiolithGeneration;
 import com.terraformersmc.cinderscapes.config.CinderscapesConfig;
 import com.terraformersmc.cinderscapes.init.*;
-import com.terraformersmc.cinderscapes.item.CinderscapesItemGroups;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import com.terraformersmc.cinderscapes.init.helpers.CinderscapesRegistry;
+import com.terraformersmc.cinderscapes.item.CinderscapesCreativeModeTabs;
+import com.terraformersmc.cinderscapes.surfacebuilders.CinderscapesSurfaceBuilders;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.AlterGroundEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+@Mod(Cinderscapes.MOD_ID)
+public final class Cinderscapes {
+    public static final String MOD_ID = "cinderscapes";
+    public static final Logger LOGGER = LogManager.getLogger(StringUtils.capitalize(MOD_ID));
 
-public class Cinderscapes implements ModInitializer {
-	public static final String MOD_ID = "cinderscapes";
-	public static final Logger LOGGER = LogManager.getLogger(StringUtils.capitalize(MOD_ID));
+    public Cinderscapes(IEventBus modBus) {
+        CinderscapesConfig.init();
+        modBus.addListener(this::onRegister);
+        modBus.addListener(this::onCommonSetup);
+        modBus.addListener(CinderscapesSpawnRestrictions::onRegisterSpawnPlacements);
+        modBus.addListener(CinderscapesBlockEntityTypes::onAddBlocks);
+        modBus.addListener(CinderscapesCreativeModeTabs::onBuildContents);
+        NeoForge.EVENT_BUS.addListener(CinderscapesTrades::onLootTableLoad);
+        NeoForge.EVENT_BUS.addListener(CinderscapesTrades::onVillagerTrades);
+        NeoForge.EVENT_BUS.addListener(Cinderscapes::onAlterGround);
+    }
 
-	private static Boolean initialized = false;
-	private static final ArrayList<Runnable> RUNNABLES = new ArrayList<>(1);
+    private void onRegister(RegisterEvent event) {
+        CinderscapesRegistry.begin(event);
+        try {
+            if (event.getRegistryKey().equals(Registries.BLOCK)) CinderscapesBlocks.init();
+            else if (event.getRegistryKey().equals(Registries.ITEM)) CinderscapesItems.init();
+            else if (event.getRegistryKey().equals(Registries.PLACEMENT_MODIFIER_TYPE)) CinderscapesPlacementModifierTypes.init();
+            else if (event.getRegistryKey().equals(Registries.FEATURE)) CinderscapesFeatures.init();
+            else if (event.getRegistryKey().equals(Registries.SOUND_EVENT)) CinderscapesSoundEvents.init();
+            else if (event.getRegistryKey().equals(Registries.CREATIVE_MODE_TAB)) CinderscapesCreativeModeTabs.init();
+        } finally {
+            CinderscapesRegistry.end();
+        }
+    }
 
-	@Override
-	public void onInitialize() {
-		CinderscapesConfig.init();
+    private void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            CinderscapesArmorTrimAssets.init();
+            CinderscapesTrades.init();
+            CinderscapesRegistryAliases.init();
+            if (ModList.get().isLoaded("biolith")) {
+                LOGGER.info("Enabling Cinderscapes's native NeoForge Biolith worldgen module.");
+                CinderscapesSurfaceBuilders.init();
+                new CinderscapesBiolithGeneration().run();
+            } else {
+                LOGGER.warn("Cinderscapes world generation disabled; Biolith is not present.");
+            }
+        });
+    }
 
-		CinderscapesArmorTrimAssets.init();
-		CinderscapesSpawnRestrictions.init();
-		CinderscapesBlocks.init();
-		CinderscapesItems.init();
-		CinderscapesBlockEntityTypes.init();
-		CinderscapesPlacementModifierTypes.init();
-		CinderscapesFeatures.init();
-		CinderscapesSoundEvents.init();
-		CinderscapesTrades.init();
-		CinderscapesItemGroups.init();
-		CinderscapesRegistryAliases.init();
+    private static void onAlterGround(AlterGroundEvent event) {
+        AlterGroundEvent.StateProvider original = event.getStateProvider();
+        event.setStateProvider((random, pos) -> event.getContext().level().isStateAtPosition(pos, state -> state.is(Blocks.NETHERRACK))
+                ? CinderscapesBlocks.NODZOL.defaultBlockState()
+                : original.getState(random, pos));
+    }
 
-		if (!FabricLoader.getInstance().isModLoaded("cinderscapes-worldgen")) {
-			Cinderscapes.LOGGER.info("No Cinderscapes worldgen module present; Cinderscapes biomes will not generate.");
-		}
-
-		// At this point Cinderscapes is completely initialized.
-		initialized = true;
-		for (Runnable callback : RUNNABLES) {
-			callback.run();
-		}
-	}
-
-	public static void callbackWhenInitialized(Runnable callback) {
-		if (initialized) {
-			callback.run();
-		} else {
-			RUNNABLES.add(callback);
-		}
-	}
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
 }

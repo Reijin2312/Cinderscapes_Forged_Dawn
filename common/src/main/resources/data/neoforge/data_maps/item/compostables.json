@@ -1,0 +1,21 @@
+{
+  "values": {
+    "cinderscapes:bramble_berries": { "chance": 0.3 },
+    "cinderscapes:scorched_shrub": { "chance": 0.3 },
+    "cinderscapes:scorched_sprouts": { "chance": 0.3 },
+    "cinderscapes:scorched_tendrils": { "chance": 0.3 },
+    "cinderscapes:twilight_fescues": { "chance": 0.3 },
+    "cinderscapes:twilight_tendrils": { "chance": 0.3 },
+    "cinderscapes:crystinium": { "chance": 0.65 },
+    "cinderscapes:ghastly_ectoplasm": { "chance": 0.65 },
+    "cinderscapes:luminous_pod": { "chance": 0.65 },
+    "cinderscapes:photofern": { "chance": 0.65 },
+    "cinderscapes:pyracinth": { "chance": 0.65 },
+    "cinderscapes:tall_photofern": { "chance": 0.65 },
+    "cinderscapes:umbral_fungus": { "chance": 0.65 },
+    "cinderscapes:twilight_vine_block": { "chance": 0.85 },
+    "cinderscapes:umbral_flesh_block": { "chance": 0.85 },
+    "cinderscapes:umbral_wart_block": { "chance": 0.85 }
+  }
+}
+
