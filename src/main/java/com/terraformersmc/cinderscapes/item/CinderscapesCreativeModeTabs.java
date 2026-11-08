@@ -4,20 +4,17 @@ import com.terraformersmc.cinderscapes.Cinderscapes;
 import com.terraformersmc.cinderscapes.config.CinderscapesConfig;
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import com.terraformersmc.cinderscapes.init.CinderscapesItems;
-import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -234,32 +231,11 @@ public class CinderscapesCreativeModeTabs {
 		/*
 		 * Add the items configured above to the Vanilla item groups.
 		 */
-		for (ResourceKey<CreativeModeTab> group : CREATIVE_MODE_TAB_MAPS.keySet()) {
-			CreativeModeTabEvents.modifyOutputEvent(group).register((output) -> {
-				FeatureFlagSet featureSet = output.getEnabledFeatures();
-				HashMap<ItemLike, CreativeModeTabEntries> entryMap = CREATIVE_MODE_TAB_MAPS.get(group);
-
-				for (ItemLike relative : entryMap.keySet()) {
-					CreativeModeTabEntries entries = entryMap.get(relative);
-
-					// FAPI does not give us a way to add at a feature-flag-disabled location.
-					// So, below we have to adjust for any items which may be disabled.
-					if (relative == null) {
-						// Target the end of the Item Group
-						output.acceptAll(entries.getStackCollection());
-					} else {
-						//Cinderscapes.LOGGER.warn("About to add to Vanilla Item Group '{}' after Item '{}': '{}'", group.getId(), relative, entries.getCollection().stream().map(ItemStack::getItem).collect(Collectors.toList()));
-						output.insertAfter(relative, entries.getStackCollection());
-					}
-				}
-			});
-		}
-
-
 		/*
 		 * Also add all the items to Cinderscapes' own item group.
 		 */
-		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_MODE_TAB, FabricCreativeModeTab.builder()
+		com.terraformersmc.cinderscapes.init.helpers.CinderscapesRegistry.register(Registries.CREATIVE_MODE_TAB,
+				CREATIVE_MODE_TAB.identifier(), CreativeModeTab.builder()
 				.title(Component.literal("Cinderscapes"))
 				.icon(() -> CinderscapesBlocks.UMBRAL_FUNGUS.asItem().getDefaultInstance())
 				.displayItems((context, output) ->
@@ -270,6 +246,22 @@ public class CinderscapesCreativeModeTabs {
 							.forEach(output::accept)
 				).build()
 		);
+	}
+
+	public static void onBuildContents(BuildCreativeModeTabContentsEvent event) {
+		HashMap<ItemLike, CreativeModeTabEntries> entryMap = CREATIVE_MODE_TAB_MAPS.get(event.getTabKey());
+		if (entryMap == null) return;
+		for (var entry : entryMap.entrySet()) {
+			ItemStack anchor = entry.getKey() == null ? null : new ItemStack(entry.getKey());
+			for (ItemStack stack : entry.getValue().getStackCollection()) {
+				if (anchor == null || !event.getParentEntries().contains(anchor)) {
+					event.accept(stack);
+				} else {
+					event.insertAfter(anchor, stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+					anchor = stack;
+				}
+			}
+		}
 	}
 
 	public static void addTabEntry(ItemLike item, ResourceKey<CreativeModeTab> group) {
@@ -285,3 +277,4 @@ public class CinderscapesCreativeModeTabs {
 
 	public static void init() { }
 }
+
