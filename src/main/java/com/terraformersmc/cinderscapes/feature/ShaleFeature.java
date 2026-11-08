@@ -1,5 +1,7 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.feature.config.ShaleFeatureConfig;
 import com.terraformersmc.terraform.shapes.api.Position;
 import com.terraformersmc.terraform.shapes.api.Quaternion;
@@ -9,23 +11,27 @@ import com.terraformersmc.terraform.shapes.api.layer.Layer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class ShaleFeature extends Feature<ShaleFeatureConfig> {
-    public ShaleFeature() {
-        super(ShaleFeatureConfig.CODEC);
+public class ShaleFeature implements Feature {
+    public static final MapCodec<ShaleFeature> CODEC = ShaleFeatureConfig.CODEC.xmap(ShaleFeature::new, feature -> feature.config);
+    private final ShaleFeatureConfig config;
+
+    public ShaleFeature(ShaleFeatureConfig config) {
+        this.config = config;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<ShaleFeatureConfig> context) {
-        RandomSource random = context.random();
-        ShaleFeatureConfig config = context.config();
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
+    public MapCodec<ShaleFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
 
         if (level.isEmptyBlock(pos) || !level.getBlockState(pos.above()).isAir() || level.getBlockState(pos).is(Blocks.BLACKSTONE)) {
             return false;

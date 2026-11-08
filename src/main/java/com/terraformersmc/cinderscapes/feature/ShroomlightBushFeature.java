@@ -1,28 +1,30 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class ShroomlightBushFeature extends Feature<NoneFeatureConfiguration> {
+public class ShroomlightBushFeature implements Feature {
+    public static final MapCodec<ShroomlightBushFeature> CODEC = MapCodec.unit(ShroomlightBushFeature::new);
 
-    public ShroomlightBushFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    @Override
+    public MapCodec<ShroomlightBushFeature> codec() {
+        return CODEC;
     }
 
     // TODO: Rewrite using the upcoming shapes library
     // TODO: Rewrite using the CountSafelistRangeFloorDecorator
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        BlockPos pos = context.origin();
-        WorldGenLevel level = context.level();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
 
         while (true) {
             search: {

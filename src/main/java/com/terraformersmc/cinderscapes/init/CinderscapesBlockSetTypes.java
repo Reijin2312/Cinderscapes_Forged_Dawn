@@ -1,13 +1,17 @@
 package com.terraformersmc.cinderscapes.init;
 
-import com.terraformersmc.cinderscapes.Cinderscapes;
-import net.fabricmc.fabric.api.object.builder.v1.block.type.BlockSetTypeBuilder;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 
-public class CinderscapesBlockSetTypes {
-	public static final BlockSetType SCORCHED = BlockSetTypeBuilder.copyOf(BlockSetType.CRIMSON)
-			.register(Identifier.fromNamespaceAndPath(Cinderscapes.MOD_ID, "scorched"));
-	public static final BlockSetType UMBRAL = BlockSetTypeBuilder.copyOf(BlockSetType.CRIMSON)
-			.register(Identifier.fromNamespaceAndPath(Cinderscapes.MOD_ID, "umbral"));
+public final class CinderscapesBlockSetTypes {
+    public static final BlockSetType SCORCHED = copy("cinderscapes:scorched");
+    public static final BlockSetType UMBRAL = copy("cinderscapes:umbral");
+
+    private static BlockSetType copy(String name) {
+        BlockSetType source = BlockSetType.CRIMSON;
+        return BlockSetType.register(new BlockSetType(name, source.canOpenByHand(), source.canOpenByWindCharge(),
+                source.canButtonBeActivatedByArrows(), source.pressurePlateSensitivity(), source.soundType(),
+                source.doorClose(), source.doorOpen(), source.trapdoorClose(), source.trapdoorOpen(),
+                source.pressurePlateClickOff(), source.pressurePlateClickOn(), source.buttonClickOff(), source.buttonClickOn()));
+    }
 }
+

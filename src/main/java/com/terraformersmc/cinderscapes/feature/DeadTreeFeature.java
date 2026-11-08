@@ -1,5 +1,7 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import com.terraformersmc.terraform.shapes.api.Position;
 import com.terraformersmc.terraform.shapes.api.Quaternion;
@@ -12,26 +14,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 
 @NullMarked
-public class DeadTreeFeature extends Feature<NoneFeatureConfiguration> {
-    public DeadTreeFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+public class DeadTreeFeature implements Feature {
+    public static final MapCodec<DeadTreeFeature> CODEC = MapCodec.unit(DeadTreeFeature::new);
+
+    @Override
+    public MapCodec<DeadTreeFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        RandomSource random = context.random();
-        BlockPos pos = context.origin();
-        WorldGenLevel level = context.level();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
         if (level.getBlockState(pos.below()).getBlock() == CinderscapesBlocks.ASH) {
             pos = pos.below();
         }

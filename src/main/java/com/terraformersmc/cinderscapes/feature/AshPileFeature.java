@@ -1,30 +1,31 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jspecify.annotations.NullMarked;
 
 // TODO: Rewrite using the upcoming shapes library
 // TODO: Make a feature config allowing the material and size range to change
 @NullMarked
-public class AshPileFeature extends Feature<NoneFeatureConfiguration> {
-    public AshPileFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+public class AshPileFeature implements Feature {
+    public static final MapCodec<AshPileFeature> CODEC = MapCodec.unit(AshPileFeature::new);
+
+    @Override
+    public MapCodec<AshPileFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        RandomSource random = context.random();
-        BlockPos pos = context.origin();
-        WorldGenLevel level = context.level();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
         int yradius = random.nextInt(5) + 7;
 
         while (true) {

@@ -1,5 +1,7 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.feature.config.CrystalShardFeatureConfig;
 import com.terraformersmc.cinderscapes.util.RegionalSafelistValidator;
 import com.terraformersmc.terraform.shapes.api.Position;
@@ -11,22 +13,26 @@ import com.terraformersmc.terraform.shapes.api.layer.Layer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class CrystalShardFeature extends Feature<CrystalShardFeatureConfig> {
-    public CrystalShardFeature() {
-        super(CrystalShardFeatureConfig.CODEC);
+public class CrystalShardFeature implements Feature {
+    public static final MapCodec<CrystalShardFeature> CODEC = CrystalShardFeatureConfig.CODEC.xmap(CrystalShardFeature::new, feature -> feature.config);
+    private final CrystalShardFeatureConfig config;
+
+    public CrystalShardFeature(CrystalShardFeatureConfig config) {
+        this.config = config;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<CrystalShardFeatureConfig> context) {
-        RandomSource random = context.random();
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
-        CrystalShardFeatureConfig config = context.config();
+    public MapCodec<CrystalShardFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
 
         int amount = random.nextInt(3) + 2;
 

@@ -1,15 +1,15 @@
 package com.terraformersmc.cinderscapes.feature.config;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 
 import java.util.List;
 
-public record VegetationFeatureConfig(BlockStateProvider vegetationStates, List<BlockState> placeableStates, List<BlockState> replaceableStates) implements FeatureConfiguration {
-    public static final Codec<VegetationFeatureConfig> CODEC = RecordCodecBuilder.create(
+public record VegetationFeatureConfig(Holder<BlockStateProvider> vegetationStates, List<BlockState> placeableStates, List<BlockState> replaceableStates) {
+    public static final MapCodec<VegetationFeatureConfig> CODEC = RecordCodecBuilder.mapCodec(
             (instance) -> instance.group(
                     BlockStateProvider.CODEC.fieldOf("vegetation_state").forGetter((config) -> config.vegetationStates),
                     BlockState.CODEC.listOf().fieldOf("placeable_states").forGetter((config) -> config.placeableStates),
@@ -17,6 +17,6 @@ public record VegetationFeatureConfig(BlockStateProvider vegetationStates, List<
             ).apply(instance, VegetationFeatureConfig::new));
 
     public VegetationFeatureConfig(BlockStateProvider vegetationStates, List<BlockState> placeableStates) {
-        this(vegetationStates, placeableStates, List.of());
+        this(Holder.direct(vegetationStates), placeableStates, List.of());
     }
 }

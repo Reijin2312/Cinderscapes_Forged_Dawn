@@ -1,5 +1,7 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.feature.config.CanopiedHugeFungusFeatureConfig;
 import com.terraformersmc.terraform.shapes.api.Position;
 import com.terraformersmc.terraform.shapes.api.Shape;
@@ -12,12 +14,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherFungusBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
@@ -25,17 +27,21 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @NullMarked
-public class CanopiedHugeFungusFeature extends Feature<CanopiedHugeFungusFeatureConfig> {
-    public CanopiedHugeFungusFeature() {
-        super(CanopiedHugeFungusFeatureConfig.CODEC);
+public class CanopiedHugeFungusFeature implements Feature {
+    public static final MapCodec<CanopiedHugeFungusFeature> CODEC = CanopiedHugeFungusFeatureConfig.CODEC.xmap(CanopiedHugeFungusFeature::new, feature -> feature.config);
+    private final CanopiedHugeFungusFeatureConfig config;
+
+    public CanopiedHugeFungusFeature(CanopiedHugeFungusFeatureConfig config) {
+        this.config = config;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<CanopiedHugeFungusFeatureConfig> context) {
-        CanopiedHugeFungusFeatureConfig config = context.config();
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
-        RandomSource random = context.random();
+    public MapCodec<CanopiedHugeFungusFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
 
         final List<BlockState> baseSafeList = new ArrayList<>(List.of(config.soilBlock(), Blocks.AIR.defaultBlockState(), Blocks.NETHERRACK.defaultBlockState()));
 

@@ -4,7 +4,6 @@ import com.terraformersmc.cinderscapes.block.*;
 import com.terraformersmc.cinderscapes.init.helpers.CinderscapesRegistry;
 import com.terraformersmc.cinderscapes.tag.CinderscapesBlockTags;
 import com.terraformersmc.terraform.wood.api.block.PillarLogHelper;
-import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
@@ -297,7 +296,7 @@ public class CinderscapesBlocks {
         CRYSTINIUM = CinderscapesRegistry.register("crystinium", CrystiniumBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.WARPED_ROOTS).mapColor(MapColor.COLOR_YELLOW));
         POTTED_CRYSTINIUM = CinderscapesRegistry.register("potted_crystinium", PottedCrystiniumBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.POTTED_ALLIUM));
 
-        CRYSTALLINE_QUARTZ = CinderscapesRegistry.register("crystalline_quartz", CinderscapesTransparentBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.QUARTZ_BLOCK).sound(SoundType.GLASS).noOcclusion().isValidSpawn(CinderscapesBlocks::never).isRedstoneConductor(CinderscapesBlocks::never).isSuffocating(CinderscapesBlocks::never).isViewBlocking(CinderscapesBlocks::never));
+        CRYSTALLINE_QUARTZ = CinderscapesRegistry.register("crystalline_quartz", CinderscapesTransparentBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.QUARTZ_BLOCK).sound(SoundType.GLASS).noOcclusion().isValidSpawn(CinderscapesBlocks::never).isRedstoneConductor(CinderscapesBlocks::never).isSuffocating(CinderscapesBlocks::never).isViewBlocking((state, level, pos, box) -> false));
         POLYPITE_QUARTZ = CinderscapesRegistry.register("polypite_quartz", PolypiteQuartzBlock::new, BlockBehaviour.Properties.ofFullCopy(CRYSTALLINE_QUARTZ));
         POTTED_POLYPITE_QUARTZ = CinderscapesRegistry.register("potted_polypite_quartz", settings -> new FlowerPotBlock(POLYPITE_QUARTZ, settings), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT));
 
@@ -352,14 +351,6 @@ public class CinderscapesBlocks {
         POLYPITE_SMOKY_QUARTZ = CinderscapesRegistry.register("polypite_smoky_quartz", PolypiteQuartzBlock::new, BlockBehaviour.Properties.ofFullCopy(CRYSTALLINE_SMOKY_QUARTZ));
         POTTED_POLYPITE_SMOKY_QUARTZ = CinderscapesRegistry.register("potted_polypite_smoky_quartz", settings -> new FlowerPotBlock(POLYPITE_SMOKY_QUARTZ, settings), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT));
 
-        addStrippables();
-    }
-
-    private static void addStrippables() {
-        StrippableBlockRegistry.register(SCORCHED_STEM, STRIPPED_SCORCHED_STEM);
-        StrippableBlockRegistry.register(SCORCHED_HYPHAE, STRIPPED_SCORCHED_HYPHAE);
-        StrippableBlockRegistry.register(UMBRAL_STEM, STRIPPED_UMBRAL_STEM);
-        StrippableBlockRegistry.register(UMBRAL_HYPHAE, STRIPPED_UMBRAL_HYPHAE);
     }
 
     private static boolean never(BlockState blockState, BlockGetter blockView, BlockPos pos) {

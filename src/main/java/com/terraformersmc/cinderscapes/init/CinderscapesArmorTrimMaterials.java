@@ -4,10 +4,11 @@ import com.terraformersmc.cinderscapes.Cinderscapes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
-import net.minecraft.world.item.equipment.trim.TrimMaterials;
+import net.minecraft.util.Util;
 
 import java.util.List;
 
@@ -19,9 +20,14 @@ public class CinderscapesArmorTrimMaterials {
     public static final ResourceKey<TrimMaterial> SULFUR_QUARTZ = createRegistryKey("cinderscapes_sulfur_quartz");
 
     public static void bootstrap(BootstrapContext<TrimMaterial> context) {
-        TrimMaterials.register(context, ROSE_QUARTZ, Style.EMPTY.withColor(0xE77391), CinderscapesArmorTrimAssets.ROSE_QUARTZ);
-        TrimMaterials.register(context, SMOKY_QUARTZ, Style.EMPTY.withColor(0x5a4b46), CinderscapesArmorTrimAssets.SMOKY_QUARTZ);
-        TrimMaterials.register(context, SULFUR_QUARTZ, Style.EMPTY.withColor(0xbaa938), CinderscapesArmorTrimAssets.SULFUR_QUARTZ);
+        register(context, ROSE_QUARTZ, Style.EMPTY.withColor(0xE77391), CinderscapesArmorTrimAssets.ROSE_QUARTZ);
+        register(context, SMOKY_QUARTZ, Style.EMPTY.withColor(0x5a4b46), CinderscapesArmorTrimAssets.SMOKY_QUARTZ);
+        register(context, SULFUR_QUARTZ, Style.EMPTY.withColor(0xbaa938), CinderscapesArmorTrimAssets.SULFUR_QUARTZ);
+    }
+
+    private static void register(BootstrapContext<TrimMaterial> context, ResourceKey<TrimMaterial> key, Style style, Identifier paletteId) {
+        Component description = Component.translatable(Util.makeDescriptionId("trim_material", key.identifier())).withStyle(style);
+        context.register(key, new TrimMaterial(paletteId, description));
     }
 
     private static ResourceKey<TrimMaterial> createRegistryKey(String id) {

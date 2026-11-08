@@ -1,12 +1,12 @@
 package com.terraformersmc.cinderscapes.feature.config;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-public record CanopiedHugeFungusFeatureConfig(BlockState soilBlock, BlockState hyphaeBlock, BlockState stemBlock, BlockState canopyBlock, BlockState fleshBlock, BlockState decorationBlock, boolean planted) implements FeatureConfiguration {
-    public static final Codec<CanopiedHugeFungusFeatureConfig> CODEC = RecordCodecBuilder.create(
+public record CanopiedHugeFungusFeatureConfig(BlockState soilBlock, BlockState hyphaeBlock, BlockState stemBlock, BlockState canopyBlock, BlockState fleshBlock, BlockState decorationBlock, boolean planted) {
+    public static final MapCodec<CanopiedHugeFungusFeatureConfig> CODEC = RecordCodecBuilder.mapCodec(
             (instance) -> instance.group(
                     BlockState.CODEC.fieldOf("soil").forGetter((config) -> config.soilBlock),
                     BlockState.CODEC.fieldOf("hyphae").forGetter((config) -> config.hyphaeBlock),

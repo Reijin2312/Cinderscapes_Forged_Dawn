@@ -1,13 +1,14 @@
 package com.terraformersmc.cinderscapes.init;
 
 import com.terraformersmc.cinderscapes.init.helpers.CinderscapesRegistry;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
+import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 public class CinderscapesItems {
 
@@ -33,7 +34,7 @@ public class CinderscapesItems {
     public static BlockItem SCORCHED_SHELF;
     public static BlockItem SCORCHED_TRAPDOOR;
 
-    public static SignItem SCORCHED_SIGN;
+    public static StandingAndWallBlockItem SCORCHED_SIGN;
     public static HangingSignItem SCORCHED_HANGING_SIGN;
 
     public static BlockItem SCORCHED_SHRUB;
@@ -76,7 +77,7 @@ public class CinderscapesItems {
     public static BlockItem UMBRAL_SHELF;
     public static BlockItem UMBRAL_TRAPDOOR;
 
-    public static SignItem UMBRAL_SIGN;
+    public static StandingAndWallBlockItem UMBRAL_SIGN;
     public static HangingSignItem UMBRAL_HANGING_SIGN;
 
     // Other
@@ -190,17 +191,17 @@ public class CinderscapesItems {
         SCORCHED_SHELF = CinderscapesRegistry.registerBlockItem("scorched_shelf", CinderscapesBlocks.SCORCHED_SHELF);
         SCORCHED_TRAPDOOR = CinderscapesRegistry.registerBlockItem("scorched_trapdoor", CinderscapesBlocks.SCORCHED_TRAPDOOR);
 
-        SCORCHED_SIGN = CinderscapesRegistry.register("scorched_sign", settings -> new SignItem(CinderscapesBlocks.SCORCHED_SIGN, CinderscapesBlocks.SCORCHED_WALL_SIGN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
+        SCORCHED_SIGN = CinderscapesRegistry.register("scorched_sign", settings -> new StandingAndWallBlockItem(CinderscapesBlocks.SCORCHED_SIGN, CinderscapesBlocks.SCORCHED_WALL_SIGN, Direction.DOWN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
         SCORCHED_HANGING_SIGN = CinderscapesRegistry.register("scorched_hanging_sign", settings -> new HangingSignItem(CinderscapesBlocks.SCORCHED_HANGING_SIGN, CinderscapesBlocks.SCORCHED_WALL_HANGING_SIGN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
 
-        SCORCHED_SHRUB = CinderscapesRegistry.registerBlockItem("scorched_shrub", CinderscapesBlocks.SCORCHED_SHRUB);
-        SCORCHED_SPROUTS = CinderscapesRegistry.registerBlockItem("scorched_sprouts", CinderscapesBlocks.SCORCHED_SPROUTS);
-        SCORCHED_TENDRILS = CinderscapesRegistry.registerBlockItem("scorched_tendrils", CinderscapesBlocks.SCORCHED_TENDRILS);
+        SCORCHED_SHRUB = CinderscapesRegistry.registerBlockItem("scorched_shrub", CinderscapesBlocks.SCORCHED_SHRUB, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW));
+        SCORCHED_SPROUTS = CinderscapesRegistry.registerBlockItem("scorched_sprouts", CinderscapesBlocks.SCORCHED_SPROUTS, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW));
+        SCORCHED_TENDRILS = CinderscapesRegistry.registerBlockItem("scorched_tendrils", CinderscapesBlocks.SCORCHED_TENDRILS, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW));
 
         ASH = CinderscapesRegistry.registerBlockItem("ash", CinderscapesBlocks.ASH);
         ASH_BLOCK = CinderscapesRegistry.registerBlockItem("ash_block", CinderscapesBlocks.ASH_BLOCK);
 
-        PYRACINTH = CinderscapesRegistry.registerBlockItem("pyracinth", CinderscapesBlocks.PYRACINTH);
+        PYRACINTH = CinderscapesRegistry.registerBlockItem("pyracinth", CinderscapesBlocks.PYRACINTH, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
 
         /*//////////////////
         // Luminous Grove //
@@ -216,10 +217,10 @@ public class CinderscapesItems {
 
         UMBRAL_NYLIUM = CinderscapesRegistry.registerBlockItem("umbral_nylium", CinderscapesBlocks.UMBRAL_NYLIUM);
 
-        UMBRAL_FUNGUS = CinderscapesRegistry.registerBlockItem("umbral_fungus", CinderscapesBlocks.UMBRAL_FUNGUS);
+        UMBRAL_FUNGUS = CinderscapesRegistry.registerBlockItem("umbral_fungus", CinderscapesBlocks.UMBRAL_FUNGUS, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
 
-        UMBRAL_WART_BLOCK = CinderscapesRegistry.registerBlockItem("umbral_wart_block", CinderscapesBlocks.UMBRAL_WART_BLOCK);
-        UMBRAL_FLESH_BLOCK = CinderscapesRegistry.registerBlockItem("umbral_flesh_block", CinderscapesBlocks.UMBRAL_FLESH_BLOCK);
+        UMBRAL_WART_BLOCK = CinderscapesRegistry.registerBlockItem("umbral_wart_block", CinderscapesBlocks.UMBRAL_WART_BLOCK, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM_HIGH));
+        UMBRAL_FLESH_BLOCK = CinderscapesRegistry.registerBlockItem("umbral_flesh_block", CinderscapesBlocks.UMBRAL_FLESH_BLOCK, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM_HIGH));
 
         UMBRAL_PLANKS = CinderscapesRegistry.registerBlockItem("umbral_planks", CinderscapesBlocks.UMBRAL_PLANKS);
         UMBRAL_SLAB = CinderscapesRegistry.registerBlockItem("umbral_slab", CinderscapesBlocks.UMBRAL_SLAB);
@@ -233,19 +234,19 @@ public class CinderscapesItems {
         UMBRAL_SHELF = CinderscapesRegistry.registerBlockItem("umbral_shelf", CinderscapesBlocks.UMBRAL_SHELF);
         UMBRAL_TRAPDOOR = CinderscapesRegistry.registerBlockItem("umbral_trapdoor", CinderscapesBlocks.UMBRAL_TRAPDOOR);
 
-        UMBRAL_SIGN = CinderscapesRegistry.register("umbral_sign", settings -> new SignItem(CinderscapesBlocks.UMBRAL_SIGN, CinderscapesBlocks.UMBRAL_WALL_SIGN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
+        UMBRAL_SIGN = CinderscapesRegistry.register("umbral_sign", settings -> new StandingAndWallBlockItem(CinderscapesBlocks.UMBRAL_SIGN, CinderscapesBlocks.UMBRAL_WALL_SIGN, Direction.DOWN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
         UMBRAL_HANGING_SIGN = CinderscapesRegistry.register("umbral_hanging_sign", settings -> new HangingSignItem(CinderscapesBlocks.UMBRAL_HANGING_SIGN, CinderscapesBlocks.UMBRAL_WALL_HANGING_SIGN, settings), new Item.Properties().stacksTo(16).useBlockDescriptionPrefix());
 
         // Other
 
-        TWILIGHT_VINE_BLOCK = CinderscapesRegistry.registerBlockItem("twilight_vine_block", CinderscapesBlocks.TWILIGHT_VINE_BLOCK);
-        TWILIGHT_TENDRILS = CinderscapesRegistry.registerBlockItem("twilight_tendrils", CinderscapesBlocks.TWILIGHT_TENDRILS);
-        TWILIGHT_FESCUES = CinderscapesRegistry.registerBlockItem("twilight_fescues", CinderscapesBlocks.TWILIGHT_FESCUES);
-        PHOTOFERN = CinderscapesRegistry.registerBlockItem("photofern", CinderscapesBlocks.PHOTOFERN);
-        TALL_PHOTOFERN = CinderscapesRegistry.registerBlockItem("tall_photofern", CinderscapesBlocks.TALL_PHOTOFERN);
+        TWILIGHT_VINE_BLOCK = CinderscapesRegistry.registerBlockItem("twilight_vine_block", CinderscapesBlocks.TWILIGHT_VINE_BLOCK, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM_HIGH));
+        TWILIGHT_TENDRILS = CinderscapesRegistry.registerBlockItem("twilight_tendrils", CinderscapesBlocks.TWILIGHT_TENDRILS, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW));
+        TWILIGHT_FESCUES = CinderscapesRegistry.registerBlockItem("twilight_fescues", CinderscapesBlocks.TWILIGHT_FESCUES, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW));
+        PHOTOFERN = CinderscapesRegistry.registerBlockItem("photofern", CinderscapesBlocks.PHOTOFERN, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
+        TALL_PHOTOFERN = CinderscapesRegistry.registerBlockItem("tall_photofern", CinderscapesBlocks.TALL_PHOTOFERN, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
 
-        LUMINOUS_POD = CinderscapesRegistry.registerBlockItem("luminous_pod", CinderscapesBlocks.LUMINOUS_POD);
-        GHASTLY_ECTOPLASM = CinderscapesRegistry.registerBlockItem("ghastly_ectoplasm", CinderscapesBlocks.GHASTLY_ECTOPLASM);
+        LUMINOUS_POD = CinderscapesRegistry.registerBlockItem("luminous_pod", CinderscapesBlocks.LUMINOUS_POD, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
+        GHASTLY_ECTOPLASM = CinderscapesRegistry.registerBlockItem("ghastly_ectoplasm", CinderscapesBlocks.GHASTLY_ECTOPLASM, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
 
         /*/////////
         // Other //
@@ -253,7 +254,7 @@ public class CinderscapesItems {
 
         ASH_PILE = CinderscapesRegistry.register("ash_pile", Item::new, new Item.Properties());
 
-        BRAMBLE_BERRIES = CinderscapesRegistry.register("bramble_berries", settings -> new BlockItem(CinderscapesBlocks.BRAMBLE_BERRY_BUSH, settings.useItemDescriptionPrefix()), new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1F).alwaysEdible().build(), Consumables.defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 600, 0), 0.8F)).build()));
+        BRAMBLE_BERRIES = CinderscapesRegistry.register("bramble_berries", settings -> new BlockItem(CinderscapesBlocks.BRAMBLE_BERRY_BUSH, settings.useItemDescriptionPrefix()), new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_LOW).food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1F).alwaysEdible().build(), Consumables.defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 600, 0), 0.8F)).build()));
 
         NODZOL = CinderscapesRegistry.registerBlockItem("nodzol", CinderscapesBlocks.NODZOL);
 
@@ -270,7 +271,7 @@ public class CinderscapesItems {
         // Quartz Cavern //
         /////////////////*/
 
-        CRYSTINIUM = CinderscapesRegistry.registerBlockItem("crystinium", CinderscapesBlocks.CRYSTINIUM);
+        CRYSTINIUM = CinderscapesRegistry.registerBlockItem("crystinium", CinderscapesBlocks.CRYSTINIUM, new Item.Properties().compostable(ContextIntProviders.COMPOSTABLE_MEDIUM));
 
         CRYSTALLINE_QUARTZ = CinderscapesRegistry.registerBlockItem("crystalline_quartz", CinderscapesBlocks.CRYSTALLINE_QUARTZ);
         POLYPITE_QUARTZ = CinderscapesRegistry.registerBlockItem("polypite_quartz", CinderscapesBlocks.POLYPITE_QUARTZ);
@@ -323,35 +324,5 @@ public class CinderscapesItems {
         CRYSTALLINE_SMOKY_QUARTZ = CinderscapesRegistry.registerBlockItem("crystalline_smoky_quartz", CinderscapesBlocks.CRYSTALLINE_SMOKY_QUARTZ);
         POLYPITE_SMOKY_QUARTZ = CinderscapesRegistry.registerBlockItem("polypite_smoky_quartz", CinderscapesBlocks.POLYPITE_SMOKY_QUARTZ);
 
-        addCompostables();
-    }
-
-    private static void addCompostables() {
-        CompostableRegistry compostingRegistry = CompostableRegistry.INSTANCE;
-        float BERRY_CHANCE = compostingRegistry.get(Items.SWEET_BERRIES);
-        float FLOWER_CHANCE = compostingRegistry.get(Items.POPPY);
-        float FUNGUS_CHANCE = compostingRegistry.get(Items.CRIMSON_FUNGUS);
-        float GRASS_CHANCE = compostingRegistry.get(Items.SHORT_GRASS);
-        float WART_BLOCK_CHANCE = compostingRegistry.get(Items.NETHER_WART_BLOCK);
-
-        compostingRegistry.add(BRAMBLE_BERRIES, BERRY_CHANCE);
-
-        compostingRegistry.add(SCORCHED_SHRUB, GRASS_CHANCE);
-        compostingRegistry.add(SCORCHED_SPROUTS, GRASS_CHANCE);
-        compostingRegistry.add(SCORCHED_TENDRILS, GRASS_CHANCE);
-        compostingRegistry.add(TWILIGHT_FESCUES, GRASS_CHANCE);
-        compostingRegistry.add(TWILIGHT_TENDRILS, GRASS_CHANCE);
-
-        compostingRegistry.add(CRYSTINIUM, FLOWER_CHANCE);
-        compostingRegistry.add(GHASTLY_ECTOPLASM, FLOWER_CHANCE);
-        compostingRegistry.add(LUMINOUS_POD, FLOWER_CHANCE);
-        compostingRegistry.add(PHOTOFERN, FLOWER_CHANCE);
-        compostingRegistry.add(PYRACINTH, FLOWER_CHANCE);
-        compostingRegistry.add(TALL_PHOTOFERN, FLOWER_CHANCE);
-        compostingRegistry.add(UMBRAL_FUNGUS, FUNGUS_CHANCE);
-
-        compostingRegistry.add(TWILIGHT_VINE_BLOCK, WART_BLOCK_CHANCE);
-        compostingRegistry.add(UMBRAL_FLESH_BLOCK, WART_BLOCK_CHANCE);
-        compostingRegistry.add(UMBRAL_WART_BLOCK, WART_BLOCK_CHANCE);
     }
 }

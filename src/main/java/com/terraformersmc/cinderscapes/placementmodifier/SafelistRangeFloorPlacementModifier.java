@@ -9,15 +9,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
 @NullMarked
-public class SafelistRangeFloorPlacementModifier extends PlacementModifier {
+public class SafelistRangeFloorPlacementModifier implements PlacementModifier {
     public static final MapCodec<SafelistRangeFloorPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     VerticalAnchor.CODEC.fieldOf("min_inclusive").forGetter(provider -> provider.minOffset),
@@ -36,7 +35,7 @@ public class SafelistRangeFloorPlacementModifier extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(PlacementContext context, RandomSource random, BlockPos pos) {
+    public void modify(PlacementContext context, RandomSource random, BlockPos pos, Consumer<BlockPos> output) {
 
         int x = pos.getX();
         int z = pos.getZ();
@@ -56,11 +55,11 @@ public class SafelistRangeFloorPlacementModifier extends PlacementModifier {
         } else {
             testPos.setY(0);
         }
-        return Stream.of(testPos);
+        output.accept(testPos);
     }
 
     @Override
-    public PlacementModifierType<?> type() {
-        return CinderscapesPlacementModifierTypes.COUNT_FLOOR;
+    public MapCodec<SafelistRangeFloorPlacementModifier> codec() {
+        return MODIFIER_CODEC;
     }
 }

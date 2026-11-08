@@ -8,7 +8,6 @@ import com.terraformersmc.cinderscapes.biome.LuminousGroveBiome;
 import com.terraformersmc.cinderscapes.biome.QuartzCavernBiome;
 import com.terraformersmc.cinderscapes.config.CinderscapesConfig;
 import com.terraformersmc.cinderscapes.surface.builders.CinderscapesSurfaceBuilders;
-import com.terraformersmc.cinderscapes.surface.rules.CinderscapesSurfaceRules;
 import net.fabricmc.fabric.api.biome.v1.NetherBiomes;
 import net.minecraft.resources.Identifier;
 

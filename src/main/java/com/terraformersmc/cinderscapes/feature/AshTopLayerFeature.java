@@ -1,5 +1,6 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
 import com.google.common.base.Suppliers;
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import com.terraformersmc.cinderscapes.init.CinderscapesPlacedFeatures;
@@ -12,30 +13,23 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @NullMarked
-public class AshTopLayerFeature extends Feature<NoneFeatureConfiguration> {
-    public AshTopLayerFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+public class AshTopLayerFeature implements Feature {
+    public static final MapCodec<AshTopLayerFeature> CODEC = MapCodec.unit(AshTopLayerFeature::new);
+
+    @Override
+    public MapCodec<AshTopLayerFeature> codec() {
+        return CODEC;
     }
 
     // Suppress placement validity check because we are evaluating multiple positions.
     @Override
-    public boolean place(NoneFeatureConfiguration config, WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
-        return this.place(new FeaturePlaceContext<>(Optional.empty(), level, chunkGenerator, random, pos, config));
-    }
-
-    @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos origin = context.origin();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos posBelow = new BlockPos.MutableBlockPos();
 

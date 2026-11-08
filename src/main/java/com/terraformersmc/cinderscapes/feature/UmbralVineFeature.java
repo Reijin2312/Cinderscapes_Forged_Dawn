@@ -1,24 +1,28 @@
 package com.terraformersmc.cinderscapes.feature;
 
+import com.mojang.serialization.MapCodec;
+
 import com.terraformersmc.cinderscapes.block.GhastlyEctoplasmBlock;
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
 import com.terraformersmc.cinderscapes.util.MathHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction8;
+import net.minecraft.core.CompositeDirection.Direction8;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class UmbralVineFeature extends Feature<NoneFeatureConfiguration> {
-    public UmbralVineFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+public class UmbralVineFeature implements Feature {
+    public static final MapCodec<UmbralVineFeature> CODEC = MapCodec.unit(UmbralVineFeature::new);
+
+    @Override
+    public MapCodec<UmbralVineFeature> codec() {
+        return CODEC;
     }
 
     // TODO: Implement a FeatureConfig to change the material
@@ -27,11 +31,8 @@ public class UmbralVineFeature extends Feature<NoneFeatureConfiguration> {
     // TODO: Figure out the chunk boundary issue (worked-around by shortening vines)
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        RandomSource random = context.random();
-        BlockPos pos = context.origin();
-        WorldGenLevel level = context.level();
-        while (pos.getY() > context.chunkGenerator().getSeaLevel()) {
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos) {
+        while (pos.getY() > chunkGenerator.getSeaLevel()) {
             search: {
                 if ( level.getBlockState(pos).getBlock() != Blocks.NETHERRACK ) break search;
                 if ( level.isEmptyBlock(pos.above()) ) break search;
