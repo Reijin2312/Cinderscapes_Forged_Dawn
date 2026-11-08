@@ -1,0 +1,52 @@
+name: Report a Bug
+description: Report a problem with the NeoForge 26.1 port
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug in **Cinderscapes NeoForge**. Please test with the latest release first.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Explain what happened and what you expected instead.
+      placeholder: Describe the problem and how to reproduce it.
+    validations:
+      required: true
+  - type: input
+    id: cinderscapes-version
+    attributes:
+      label: Cinderscapes NeoForge
+      placeholder: 6.0.0-neoforge.1
+    validations:
+      required: true
+  - type: input
+    id: neoforge-version
+    attributes:
+      label: NeoForge
+      placeholder: 26.1.x
+    validations:
+      required: true
+  - type: dropdown
+    id: minecraft-version
+    attributes:
+      label: Minecraft
+      options: [26.1.1]
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Attach latest.log or a crash report. A link to mclo.gs is preferred.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: Other Mods
+      description: List the other installed mods or attach a complete mod list.
+      render: shell
+

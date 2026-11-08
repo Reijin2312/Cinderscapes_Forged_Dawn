@@ -1,6 +1,6 @@
 [![Cinderscapes](https://i.imgur.com/rNUt2jD.png)](https://modrinth.com/mod/cinderscapes)
 
-![Gradle Build](https://github.com/TerraformersMC/Cinderscapes/workflows/Check%20Build/badge.svg?event=push)
+![Gradle Build](https://github.com/Reijin2312/Cinderscapes_Forged_Dawn/actions/workflows/check_build.yml/badge.svg?branch=26.1)
 
 <p align="center">
 Cinderscapes is a beautiful, yet frightening biomes mod for Minecraft 1.16, 1.18.2, 1.19, and 1.20 running on the Fabric mod loader. Cinderscapes enhances the default minecraft experience by adding four new rich and detailed nether biomes following in the same style as those already in the vanilla game. In addition to new biomes Cinderscapes adds some new unique types of building blocks further expanding your building capabilities.

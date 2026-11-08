@@ -1,7 +1,6 @@
 package com.terraformersmc.cinderscapes.init;
 
 import com.terraformersmc.cinderscapes.init.helpers.CinderscapesRegistry;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -323,35 +322,5 @@ public class CinderscapesItems {
         CRYSTALLINE_SMOKY_QUARTZ = CinderscapesRegistry.registerBlockItem("crystalline_smoky_quartz", CinderscapesBlocks.CRYSTALLINE_SMOKY_QUARTZ);
         POLYPITE_SMOKY_QUARTZ = CinderscapesRegistry.registerBlockItem("polypite_smoky_quartz", CinderscapesBlocks.POLYPITE_SMOKY_QUARTZ);
 
-        addCompostables();
-    }
-
-    private static void addCompostables() {
-        CompostableRegistry compostingRegistry = CompostableRegistry.INSTANCE;
-        float BERRY_CHANCE = compostingRegistry.get(Items.SWEET_BERRIES);
-        float FLOWER_CHANCE = compostingRegistry.get(Items.POPPY);
-        float FUNGUS_CHANCE = compostingRegistry.get(Items.CRIMSON_FUNGUS);
-        float GRASS_CHANCE = compostingRegistry.get(Items.SHORT_GRASS);
-        float WART_BLOCK_CHANCE = compostingRegistry.get(Items.NETHER_WART_BLOCK);
-
-        compostingRegistry.add(BRAMBLE_BERRIES, BERRY_CHANCE);
-
-        compostingRegistry.add(SCORCHED_SHRUB, GRASS_CHANCE);
-        compostingRegistry.add(SCORCHED_SPROUTS, GRASS_CHANCE);
-        compostingRegistry.add(SCORCHED_TENDRILS, GRASS_CHANCE);
-        compostingRegistry.add(TWILIGHT_FESCUES, GRASS_CHANCE);
-        compostingRegistry.add(TWILIGHT_TENDRILS, GRASS_CHANCE);
-
-        compostingRegistry.add(CRYSTINIUM, FLOWER_CHANCE);
-        compostingRegistry.add(GHASTLY_ECTOPLASM, FLOWER_CHANCE);
-        compostingRegistry.add(LUMINOUS_POD, FLOWER_CHANCE);
-        compostingRegistry.add(PHOTOFERN, FLOWER_CHANCE);
-        compostingRegistry.add(PYRACINTH, FLOWER_CHANCE);
-        compostingRegistry.add(TALL_PHOTOFERN, FLOWER_CHANCE);
-        compostingRegistry.add(UMBRAL_FUNGUS, FUNGUS_CHANCE);
-
-        compostingRegistry.add(TWILIGHT_VINE_BLOCK, WART_BLOCK_CHANCE);
-        compostingRegistry.add(UMBRAL_FLESH_BLOCK, WART_BLOCK_CHANCE);
-        compostingRegistry.add(UMBRAL_WART_BLOCK, WART_BLOCK_CHANCE);
     }
 }

@@ -1,8 +1,6 @@
 package com.terraformersmc.cinderscapes.block;
 
 import com.terraformersmc.cinderscapes.init.CinderscapesBlocks;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
@@ -18,7 +16,6 @@ public class PottedPyracinthBlock extends FlowerPotBlock {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         double x = pos.getX() + 0.5;
         double z = pos.getZ() + 0.5;

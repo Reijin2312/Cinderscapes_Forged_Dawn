@@ -1,0 +1,8 @@
+{
+  "values": {
+    "cinderscapes:scorched_stem": { "stripped_block": "cinderscapes:stripped_scorched_stem" },
+    "cinderscapes:scorched_hyphae": { "stripped_block": "cinderscapes:stripped_scorched_hyphae" },
+    "cinderscapes:umbral_stem": { "stripped_block": "cinderscapes:stripped_umbral_stem" },
+    "cinderscapes:umbral_hyphae": { "stripped_block": "cinderscapes:stripped_umbral_hyphae" }
+  }
+}

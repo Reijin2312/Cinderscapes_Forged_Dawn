@@ -1,8 +1,6 @@
 package com.terraformersmc.cinderscapes.block;
 
 import com.terraformersmc.cinderscapes.util.StateShapeRegistry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
@@ -24,7 +22,6 @@ public class PyracinthBlock extends CinderscapesNetherPlantBlock {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         Vec3 center = this.getShape(state, level, pos, CollisionContext.empty()).bounds().getCenter();
         double x = (double)pos.getX() + center.x;

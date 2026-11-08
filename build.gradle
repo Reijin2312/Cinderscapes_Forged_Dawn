@@ -1,120 +1,132 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
-    id 'idea'
-    id 'eclipse'
-    id 'net.fabricmc.fabric-loom' version '1.15.+'
+    id 'net.neoforged.moddev' version "${moddev_version}"
 }
 
-base.archivesName = project.archives_base_name
 group = project.maven_group
+version = project.mod_version
+base.archivesName = project.archives_base_name
 
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/3.2/ferry-mpp.gradle'
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
+    withSourcesJar()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/client/java'
+            exclude '**/data/**'
+            exclude '**/integration/CinderscapesModMenu.java'
+            exclude '**/biome/CinderscapesBiomeRemappings.java'
+            exclude '**/biomegen/CinderscapesBiomeAPIGeneration.java'
+            exclude '**/init/CinderscapesArmorTrimItemModels.java'
+            exclude '**/init/CinderscapesBlockFamilies.java'
+        }
+        resources {
+            srcDir 'src/main/generated'
+            srcDir 'src/client/resources'
+            exclude 'fabric.mod.json'
+            exclude 'cinderscapes.accesswidener'
+        }
+    }
+    gametest {
+        java.srcDir 'src/gametest/java'
+        resources.srcDir 'src/gametest/resources'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += output + compileClasspath + sourceSets.main.runtimeClasspath
+    }
+}
+
+configurations {
+    terraformEmbedded
+}
+
+neoForge {
+    version = project.neoforge_version
+    accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        client { client() }
+        server { server() }
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'cinderscapes'
+        }
+    }
+    mods {
+        cinderscapes {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+}
 
 repositories {
-    maven {
-        name = 'TerraformersMC'
-        url = 'https://maven.terraformersmc.com/'
-    }
-
-    // Cloth Config
-    maven {
-        url = 'https://maven.shedaniel.me'
-    }
-
-    // for Mixson
-    exclusiveContent {
-        forRepository {
-            maven {
-                url 'https://jitpack.io'
-            }
-        }
-        filter {
-            includeGroup "com.github.ramixin"
-        }
-    }
-}
-
-loom {
-    splitEnvironmentSourceSets()
-
-    mods {
-        "${project.name}" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
-
-    accessWidenerPath = file("src/main/resources/cinderscapes.accesswidener")
-}
-
-fabricApi {
-    configureDataGeneration {
-        client = true
-    }
+    mavenCentral()
+    maven { url 'https://maven.neoforged.net/releases' }
+    maven { url 'https://maven.terraformersmc.com/releases' }
+    maven { url 'https://maven.terraformersmc.com' }
+    maven { url 'https://maven.gnomecraft.net/releases' }
+    maven { url 'https://maven.shedaniel.me' }
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:$project.minecraft_version"
-
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    compileOnlyApi "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-    include(api("com.terraformersmc.terraform-api:terraform-biome-remapper-api-v1:${project.terraform_biome_remapper_api_version}"))
-    include(api("com.terraformersmc.terraform-api:terraform-shapes-api-v1:${project.terraform_shapes_api_version}"))
-    include(api("com.terraformersmc.terraform-api:terraform-surfaces-api-v1:${project.terraform_surfaces_api_version}"))
-    include(api("com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraform_wood_api_version}"))
-
-    include(api("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}"))
-
-    include(api("com.github.ramixin:mixson-fabric:${project.mixson_version}"))
-
-    include(api("com.terraformersmc:biolith-fabric:${biolith_version}"))
+    implementation "com.terraformersmc:biolith-neoforge:${biolith_version}"
+    jarJar("com.terraformersmc:biolith-neoforge:${biolith_version}") { transitive = false }
+    implementation "me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}"
+    terraformEmbedded("com.terraformersmc.terraform-api:terraform-shapes-api-v1:${terraform_shapes_api_version}") {
+        transitive = false
+    }
+    terraformEmbedded("com.terraformersmc.terraform-api:terraform-wood-api-v1:${terraform_wood_api_version}") {
+        transitive = false
+    }
+    compileOnly files(configurations.terraformEmbedded)
+    jarJar("com.terraformersmc.terraform-api:terraform-shapes-api-v1:${terraform_shapes_api_version}") {
+        transitive = false
+    }
+    jarJar("com.terraformersmc.terraform-api:terraform-wood-api-v1:${terraform_wood_api_version}") {
+        transitive = false
+    }
 }
 
-processResources {
-    inputs.property "version", project.version
+def syncTerraformRuntime = tasks.register('syncTerraformRuntime', Sync) {
+    from({ configurations.terraformEmbedded.collect { zipTree(it) } })
+    include '**/*.class'
+    into layout.buildDirectory.dir('generated/terraformClasses')
+}
 
-    filesMatching("fabric.mod.json") {
-        expand "version": inputs.properties.version
-    }
+sourceSets.main.output.dir(layout.buildDirectory.dir('generated/terraformClasses'), builtBy: syncTerraformRuntime)
+
+tasks.named('compileJava') {
+    finalizedBy syncTerraformRuntime
+}
+
+tasks.named('compileGametestJava') {
+    dependsOn syncTerraformRuntime
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    it.options.release = 25
+    options.encoding = 'UTF-8'
+    options.release = 25
 }
 
-java {
-    withSourcesJar()
-
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand version: project.version
+    }
 }
 
 jar {
-    inputs.property "projectName", project.name
-
-    from("LICENSE") {
-        rename { "${it}_${project.name}" }
-    }
+    from('LICENSE') { rename { "${it}_${project.name}" } }
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        create("mavenJava", MavenPublication) {
-            from components.java
-        }
-    }
+tasks.named('runGameTestServer') {
+    dependsOn tasks.named('gametestClasses'), syncTerraformRuntime
+}
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
+tasks.matching { it.name in ['runClient', 'runServer'] }.configureEach {
+    dependsOn syncTerraformRuntime
 }

@@ -1,18 +1,13 @@
 package com.terraformersmc.cinderscapes.init;
 
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zoglin;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 
-public class CinderscapesSpawnRestrictions {
-    public static void init() {
-            register(EntityType.ZOGLIN, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Zoglin::checkMobSpawnRules);
-    }
+public final class CinderscapesSpawnRestrictions {
+    private CinderscapesSpawnRestrictions() {}
 
-    // Register ignoring if somebody else has already done so.
-    private static <T extends Mob> void register(EntityType<T> type, SpawnPlacementType location, Heightmap.Types heightmapType, SpawnPlacements.SpawnPredicate<T> predicate) {
-        try {
-            SpawnPlacements.register(type, location, heightmapType, predicate);
-        } catch (IllegalStateException ignored) { }
+    public static void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(EntityType.ZOGLIN, Zoglin::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
     }
 }
